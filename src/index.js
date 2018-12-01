@@ -1,16 +1,7 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-function Hello() {
-  return <span>Hello</span>;
-}
+import App from './components/app';
 
-function World() {
-  return <span>World</span>;
-}
-
-function HelloWorld() {
-  return [<Hello />, <World />];
-}
-
-ReactDOM.render(<HelloWorld />, document.querySelector("#root"));
+ReactDOM.render(<App />,
+  document.getElementById('root'));
