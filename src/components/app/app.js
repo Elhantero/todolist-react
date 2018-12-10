@@ -16,7 +16,9 @@ export default class App extends Component {
       this.createItem("Drink Coffee"),
       this.createItem("Make Awesome App"),
       this.createItem("Have a lunch")
-    ]
+    ],
+    term: "",
+    filter: ""
   };
 
   deleteItem = id => {
@@ -33,6 +35,7 @@ export default class App extends Component {
     return {
       label,
       important: false,
+      show: true,
       done: false,
       id: this.maxId++
     };
@@ -71,20 +74,52 @@ export default class App extends Component {
     });
   };
 
+  search = (items, term) => {
+    if (!term) return items;
+    return items.filter(item => {
+      return item.label.toLowerCase().indexOf(term.toLowerCase()) > -1;
+    });
+  };
+
+  filter(items, filter) {
+    switch (filter) {
+      case "all":
+        return items;
+      case "active":
+        return items.filter(item => !item.done);
+      case "done":
+        return items.filter(item => item.done);
+      default:
+        return items;
+    }
+  }
+
+  onSearchChange = term => {
+    this.setState({ term });
+  };
+
+  onFilterChange = filter => {
+    this.setState({ filter });
+  };
+
   render() {
-    const { todoData } = this.state;
+    const { todoData, term, filter } = this.state;
+    const visibleItems = this.filter(this.search(todoData, term), filter);
     const doneCount = todoData.filter(item => item.done).length;
     const todoCount = todoData.length - doneCount;
     return (
       <div className="todo-app">
         <AppHeader toDo={todoCount} done={doneCount} />
         <div className="top-panel d-flex">
-          <SearchPanel />
-          <ItemStatusFilter />
+          <SearchPanel onSearchChange={this.onSearchChange} />
+          <ItemStatusFilter
+            filter={filter}
+            onFilterChange={this.onFilterChange}
+          />
         </div>
 
         <TodoList
-          todos={todoData}
+          todos={visibleItems}
           onDeleted={this.deleteItem}
           onAdded={this.addItem}
           onToggleImportant={this.onToggleImportant}
